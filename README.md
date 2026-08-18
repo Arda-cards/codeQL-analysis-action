@@ -44,19 +44,27 @@ See [codeql.yaml](.github/workflows/codeql.yaml).
 ## Usage
 
 ```yaml
-codeql:
-  if: "${{ github.event_name != 'push' || github.ref_name != 'main' }}"
-  permissions:
-    contents: read
-    security-events: write
-  uses: Arda-cards/CodeQL-workflow/.github/workflows/codeql.yaml@v1
-  with:
-    no_build_languages: '["actions","javascript-typescript"]'
-    buf_version: "1.57.0"
-  secrets:
-    gpr_user: "${{ secrets.GPR_READ_USER }}"
-    gpr_key: "${{ secrets.GPR_READ_KEY }}"
-    buf_token: "${{ secrets.BUF_TOKEN }}"
+name: "codeQL"
+on:
+  pull_request:
+    types: [ opened, ready_for_review, reopened, synchronize ]
+
+permissions: { }
+
+jobs:
+  codeQL:
+    if: '! github.event.pull_request.draft'
+    permissions:
+      contents: read
+      security-events: write
+    uses: Arda-cards/CodeQL-workflow/.github/workflows/codeql.yaml@v1
+    with:
+      no_build_languages: '["actions","javascript-typescript"]'
+      buf_version: "1.57.0"
+    secrets:
+      gpr_user: "${{ secrets.GPR_READ_USER }}"
+      gpr_key: "${{ secrets.GPR_READ_KEY }}"
+      buf_token: "${{ secrets.BUF_TOKEN }}"
 ```
 
 ## Permission Required

@@ -103,13 +103,12 @@ jobs:
           GPR_KEY: ${{ secrets.gpr_key }}
           USERNAME: ${{ secrets.gpr_user }}
           TOKEN: ${{ secrets.gpr_key }}
-          GRADLE_TASK: ${{ inputs.gradle_task }}
         run: |
           [ "${RUNNER_DEBUG}" == 1 ] && set -xv
-          set -euo pipefail
+          set -u
 
           # Split deliberately: the input may name more than one task.
-          read -r -a tasks <<<"${GRADLE_TASK}"
+          read -r -a tasks <<<"${{ inputs.gradle_task }}"
 
           ./gradlew "${tasks[@]}" --no-build-cache
 
@@ -149,7 +148,7 @@ jobs:
       - name: "Report the combined result"
         run: |
           [ "${RUNNER_DEBUG}" == 1 ] && set -xv
-          set -uo pipefail
+          set -u
 
           echo "::notice::compiled=${{ needs.compiled.result }} interpreted=${{ needs.interpreted.result }}"
 
