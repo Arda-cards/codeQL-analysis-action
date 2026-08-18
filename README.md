@@ -1,10 +1,19 @@
-# ... set a title
+# CodeQL Analysis Action
 
-... Grab the badge for the CI build here, see
-[Adding a workflow status badge](https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/monitoring-workflows/adding-a-workflow-status-badge) ...
+[![ci](https://github.com/Arda-cards/codeQL-analysis-action/actions/workflows/ci.yaml/badge.svg)](https://github.com/Arda-cards/codeQL-analysis-action/actions/workflows/ci.yaml)
 [CHANGELOG.md](CHANGELOG.md)
 
-This action ...
+This replaces GitHub's default setup entirely. The documented way to adopt an
+advanced configuration is to "Switch to advanced" and disable CodeQL default
+setup, which is repository-wide rather than per-language — so a consumer that
+adopts this must also disable default setup, and this workflow has to cover
+every language that setup was covering, not only the compiled ones.
+
+Three constraints shaped the compiled job, and together they rule out the
+simpler designs.
+
+Gradle compiles with `--no-build-cache` so that projects that set `org.gradle.caching=true`
+always compile. CodeQL would otherwise extract nothing and report zero alerts.
 
 ## Arguments
 
@@ -13,12 +22,50 @@ See [action.yaml](action.yaml).
 ## Usage
 
 ```yaml
-...
+name: "CodeQL"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions: { }
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: 'ubuntu-latest'
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: actions
+            build_mode: none
+          - language: java-kotlin
+            build_mode: manual
+    steps:
+      - uses: actions/checkout@v7
+      - uses: Arda-cards/codeQL-analysis-action@v1
+        with:
+          language: ${{ matrix.language }}
+          build_mode: ${{ matrix.build_mode }}
+          gpr_key: ${{ secrets.GPR_READ_KEY }}
+          gpr_user: ${{ secrets.GPR_READ_USER }}
 ```
 
 ## Permission Required
 
 ```yaml
-  permissions:
-    ...
+permissions:
+  security-events: write
+  packages: read
+  actions: read
+  contents: read
 ```

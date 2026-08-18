@@ -18,29 +18,14 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
   - `Fixed` for any bugfixes.
   - `Security` in case of vulnerabilities.
 
-## [1.1.0] - 2026-02-22
+## [1.0.0] - 2026-08-19
 
 ### Added
 
-- `Makefile` allows for local execution of the linting steps.
+- A reusable CodeQL action, giving any Gradle repository CodeQL analysis of its Kotlin and Java sources.
+  GitHub's own default setup cannot build these projects — it has neither the package credentials nor buf —
+  so the workflow compiles with the same toolchain the build uses. It runs beside the caller's build rather
+  than inside it, so analysis does not lengthen the path to a merge.
 
-### Fixed
-
-- Bump `actions/checkout` from 5 to 7
-- `super-linter` uses a fixed set of linters to prevent surprises.
-
-## [1.0.1] - 2025-08-19
-
-### Fixed
-
-- Bump actions/checkout from 4 to 5
-- Bump super-linter/super-linter from 7 to 8
-- Updated to improved CI/CD flow
-  - Better recognition of the default branch (it is protected)
-  - Suppress work on draft pull request
-
-## [1.0.0] - 2025-01-08
-
-### Added
-
-- Extracted
+  The action replaces default setup rather than supplementing it, because switching to an advanced configuration
+  disables CodeQL for the whole repository and not just for the compiled language.

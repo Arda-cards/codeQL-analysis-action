@@ -1,0 +1,16 @@
+name: Pull Request Upkeep
+
+on:
+  pull_request:
+    types: [ opened ]
+
+permissions: { }
+
+jobs:
+  upkeep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Arda-cards/pull-request-setup-action@v2
+        with:
+          pull_request_number: "${{ github.event.pull_request.number }}"
+          token: "${{ secrets.ARDA_GH_ACTION_PROJECT_WRITER }}"

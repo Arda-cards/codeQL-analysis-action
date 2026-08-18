@@ -1,9 +1,67 @@
 ---
-name: "..."
-description: "..."
+name: codeQL-workflow
+description: "Validate a language with codeQL"
 inputs:
-  ...
-outputs:
-  ...
+  buf_token:
+    description: "Token for buf, where buf_version is set."
+    required: false
+    default: ""
+  buf_version:
+    description: >-
+      Version of buf to install. Required where protobuf
+      sources are generated as part of the build; leave empty otherwise.
+    required: false
+    default: ""
+  build_mode:
+    description: "The codeQL build mode"
+    required: true
+  gpr_key:
+    description: "Token for gpr_user in manual mode"
+    required: false
+    default: ""
+  gpr_user:
+    description: "User with read access to GitHub Packages, for dependency resolution in manual mode"
+    required: false
+    default: ""
+  gradle_tasks:
+    description: >-
+      Space delimited list of tasks that compiles everything worth analysing. `classes` builds only production classes; a project whose test sources should also be
+      analysed wants `testClasses` as well.
+    required: false
+    default: "classes"
+  language:
+    description: "The programming language to validate with codeQL."
+    required: true
 runs:
-  ...
+  using: "composite"
+  steps:
+    - uses: Arda-cards/gradle-toolchain-action@v1
+      if: inputs.build_mode == 'manual'
+      with:
+        buf_version: ${{ inputs.buf_version }}
+        gradle_cache_read_only: 'true'
+        token: ${{ inputs.token }}
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v4
+      with:
+        languages: ${{ inputs.language }}
+        build-mode: ${{ inputs.build_mode }}
+
+    - name: Run manual build steps
+      if: inputs.build_mode == 'manual'
+      shell: bash
+      env:
+        BUF_TOKEN: ${{ inputs.buf_token }}
+        GPR_USER: ${{ inputs.gpr_user }}
+        GPR_KEY: ${{ inputs.gpr_key }}
+      run: |
+        [ "${{runner.debug}}" == 1 ] && set -xv
+        set -u
+        
+        ./gradlew ${{ inputs.gradle_tasks }} --no-build-cache
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v4
+      with:
+        category: "/language:${{inputs.language}}"
