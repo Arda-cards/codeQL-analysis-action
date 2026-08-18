@@ -1,4 +1,3 @@
 ---
 paths:
-  .github/workflows/**/*.{yml,yaml}:
-  action.yaml:
+  .github/workflows/*.{yml,yaml}:
