@@ -59,7 +59,7 @@ runs:
         USERNAME: ${{ inputs.gpr_user }}
         TOKEN: ${{ inputs.gpr_key }}
       run: |
-        [ "${runner.debug}" == 1 ] && set -xv
+        [ "${{runner.debug}}" == 1 ] && set -xv
         set -u
         
         ./gradlew ${{ inputs.gradle_tasks }} --no-build-cache
