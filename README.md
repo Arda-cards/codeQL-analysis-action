@@ -56,7 +56,6 @@ jobs:
         with:
           language: ${{ matrix.language }}
           build_mode: ${{ matrix.build_mode }}
-          token: ${{ secrets.GITHUB_TOKEN }}
           gpr_key: ${{ secrets.GPR_READ_KEY }}
           gpr_user: ${{ secrets.GPR_READ_USER }}
 ```
