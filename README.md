@@ -1,10 +1,9 @@
 # gradle build
 
-[![ci](https://github.com/Arda-cards/codeQL-workflow/actions/workflows/ci.yaml/badge.svg)](https://github.com/Arda-cards/codeQL-workflow/actions/workflows/ci.yaml)
+[![ci](https://github.com/Arda-cards/codeQL-analysis-action/actions/workflows/ci.yaml/badge.svg)](https://github.com/Arda-cards/codeQL-analysis-action/actions/workflows/ci.yaml)
 [CHANGELOG.md](CHANGELOG.md)
 
-CodeQL analysis for a Gradle project, as jobs a consumer runs alongside its
-build rather than inside it.
+CodeQL analysis for a Gradle project.
 
 This replaces GitHub's default setup entirely. The documented way to adopt an
 advanced configuration is to "Switch to advanced" and disable CodeQL default
@@ -12,30 +11,15 @@ setup, which is repository-wide rather than per-language — so a consumer that
 adopts this must also disable default setup, and this workflow has to cover
 every language that setup was covering, not only the compiled ones.
 
-Hence two jobs. They differ in one thing that cannot be expressed in a single
-CodeQL invocation: whether the language needs to be built.
-
-- `compiled`    java-kotlin, build-mode manual — CodeQL's extractor observes
-                the compiler, so there has to be a compile for it to watch.
-- `interpreted` actions, javascript-typescript and the like, build-mode none —
-                extracted straight from source, so no JDK, no Gradle, no buf.
-
 Three constraints shaped the compiled job, and together they rule out the
 simpler designs.
 
-1. `init`, the build, and `analyze` must live in one job. A composite action
-    cannot create a job, which is why this is a reusable workflow.
-
-2. Wrapping the consumer's existing `./gradlew build` would make analysis wait
-    for the tests. Compiling separately costs one extra compile and hides the
-    whole analysis under the test run instead.
-
-3. `org.gradle.caching=true` is set in `operations` and `common-module`, so a
-    cache hit makes `compileKotlin` UP-TO-DATE and the compiler never runs.
-    CodeQL would then extract nothing and report zero alerts — indistinguishable
-    from clean code. `--no-build-cache` is what stops that, and it is why this
-    build cannot share the test build's cache even though it shares the
-    dependency cache.
+`org.gradle.caching=true` is set in `operations` and `common-module`, so a
+cache hit makes `compileKotlin` UP-TO-DATE and the compiler never runs.
+CodeQL would then extract nothing and report zero alerts — indistinguishable
+from clean code. `--no-build-cache` is what stops that, and it is why this
+build cannot share the test build's cache even though it shares the
+dependency cache.
 
 ## Arguments
 
@@ -44,33 +28,51 @@ See [action.yaml](action.yaml).
 ## Usage
 
 ```yaml
-name: "codeQL"
+name: "CodeQL"
+
 on:
+  push:
+    branches: [ "main" ]
   pull_request:
-    types: [ opened, ready_for_review, reopened, synchronize ]
+    branches: [ "main" ]
 
 permissions: { }
 
 jobs:
-  codeQL:
-    if: '! github.event.pull_request.draft'
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: 'ubuntu-latest'
     permissions:
-      contents: read
       security-events: write
-    uses: Arda-cards/CodeQL-workflow/.github/workflows/codeql.yaml@v1
-    with:
-      no_build_languages: '["actions","javascript-typescript"]'
-      buf_version: "1.57.0"
-    secrets:
-      gpr_user: "${{ secrets.GPR_READ_USER }}"
-      gpr_key: "${{ secrets.GPR_READ_KEY }}"
-      buf_token: "${{ secrets.BUF_TOKEN }}"
+      packages: read
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: actions
+            build_mode: none
+          - language: java-kotlin
+            build_mode: manual
+    steps:
+      - uses: actions/checkout@v7
+      - uses: Arda-cards/codeQL-analysis-action@dna/PDEV-1414
+        with:
+          language: ${{ matrix.language }}
+          build_mode: ${{ matrix.build_mode }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          gpr_key: ${{ secrets.GPR_READ_KEY }}
+          gpr_user: ${{ secrets.GPR_READ_USER }}
 ```
 
 ## Permission Required
 
 ```yaml
 permissions:
-  contents: read
   security-events: write
+  packages: read
+  actions: read
+  contents: read
 ```
