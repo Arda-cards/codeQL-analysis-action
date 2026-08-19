@@ -1,9 +1,7 @@
-# gradle build
+# CodeQL Analysis Action
 
 [![ci](https://github.com/Arda-cards/codeQL-analysis-action/actions/workflows/ci.yaml/badge.svg)](https://github.com/Arda-cards/codeQL-analysis-action/actions/workflows/ci.yaml)
 [CHANGELOG.md](CHANGELOG.md)
-
-CodeQL analysis for a Gradle project.
 
 This replaces GitHub's default setup entirely. The documented way to adopt an
 advanced configuration is to "Switch to advanced" and disable CodeQL default
