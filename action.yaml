@@ -32,6 +32,10 @@ inputs:
   language:
     description: "The programming language to validate with codeQL."
     required: true
+  token:
+    description: "GitHub token, required for buf"
+    required: false
+    default: ""
 runs:
   using: "composite"
   steps:

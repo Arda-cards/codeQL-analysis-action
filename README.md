@@ -58,6 +58,7 @@ jobs:
           build_mode: ${{ matrix.build_mode }}
           gpr_key: ${{ secrets.GPR_READ_KEY }}
           gpr_user: ${{ secrets.GPR_READ_USER }}
+          token: ${{ secrets.TOKEN }}
 ```
 
 ## Permission Required
