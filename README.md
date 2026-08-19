@@ -1,6 +1,6 @@
 # gradle build
 
-[![ci](https://github.com/Arda-cards/CodeQL-workflow/actions/workflows/ci.yaml/badge.svg)](https://github.com/Arda-cards/CodeQL-workflow/actions/workflows/ci.yaml)
+[![ci](https://github.com/Arda-cards/codeQL-workflow/actions/workflows/ci.yaml/badge.svg)](https://github.com/Arda-cards/codeQL-workflow/actions/workflows/ci.yaml)
 [CHANGELOG.md](CHANGELOG.md)
 
 CodeQL analysis for a Gradle project, as jobs a consumer runs alongside its
@@ -39,7 +39,7 @@ simpler designs.
 
 ## Arguments
 
-See [codeql.yaml](.github/workflows/codeql.yaml).
+See [action.yaml](action.yaml).
 
 ## Usage
 
