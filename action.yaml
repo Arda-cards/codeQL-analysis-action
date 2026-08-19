@@ -16,11 +16,13 @@ inputs:
     description: "The codeQL build mode"
     required: true
   gpr_key:
-    description: "Token for gpr_user."
-    required: true
+    description: "Token for gpr_user in manual mode"
+    required: false
+    default: ""
   gpr_user:
-    description: "User with read access to GitHub Packages, for dependency resolution."
-    required: true
+    description: "User with read access to GitHub Packages, for dependency resolution in manual mode"
+    required: false
+    default: ""
   gradle_tasks:
     description: >-
       Space delimited list of tasks that compiles everything worth analysing. `classes` builds only production classes; a project whose test sources should also be
@@ -29,9 +31,6 @@ inputs:
     default: "classes"
   language:
     description: "The programming language to validate with codeQL."
-    required: true
-  token:
-    description: "The GitHub token to use for authentication."
     required: true
 runs:
   using: "composite"
@@ -56,8 +55,6 @@ runs:
         BUF_TOKEN: ${{ inputs.buf_token }}
         GPR_USER: ${{ inputs.gpr_user }}
         GPR_KEY: ${{ inputs.gpr_key }}
-        USERNAME: ${{ inputs.gpr_user }}
-        TOKEN: ${{ inputs.gpr_key }}
       run: |
         [ "${{runner.debug}}" == 1 ] && set -xv
         set -u

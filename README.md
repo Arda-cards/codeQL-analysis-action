@@ -12,12 +12,8 @@ every language that setup was covering, not only the compiled ones.
 Three constraints shaped the compiled job, and together they rule out the
 simpler designs.
 
-`org.gradle.caching=true` is set in `operations` and `common-module`, so a
-cache hit makes `compileKotlin` UP-TO-DATE and the compiler never runs.
-CodeQL would then extract nothing and report zero alerts — indistinguishable
-from clean code. `--no-build-cache` is what stops that, and it is why this
-build cannot share the test build's cache even though it shares the
-dependency cache.
+Gradle compiles with `--no-build-cache` so that projects that set `org.gradle.caching=true`
+always compile. CodeQL would otherwise extract nothing and report zero alerts.
 
 ## Arguments
 
