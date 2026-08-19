@@ -18,11 +18,11 @@ Categories, defined in [changemap.json](.github/clq/changemap.json):
   - `Fixed` for any bugfixes.
   - `Security` in case of vulnerabilities.
 
-## [1.0.0] - 2026-08-18
+## [1.0.0] - 2026-08-19
 
 ### Added
 
-- A reusable CodeQL workflow, giving any Gradle repository CodeQL analysis of its Kotlin and Java sources.
+- A reusable CodeQL action, giving any Gradle repository CodeQL analysis of its Kotlin and Java sources.
   GitHub's own default setup cannot build these projects — it has neither the package credentials nor buf —
   so the workflow compiles with the same toolchain the build uses. It runs beside the caller's build rather
   than inside it, so analysis does not lengthen the path to a merge.
